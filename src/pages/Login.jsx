@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const checkLocalStorage = async () => {
     const token = localStorage.getItem("token");
     if (token) {
+      setLoading(true);
       //Api call to check if token is valid
       setTimeout(() => {
         const validToken = true;
         if (validToken) {
           // navigate to dashboard
+          console.log("Go to dashboard");
         } else {
+          setLoading(false);
           localStorage.removeItem("token");
         }
       }, 2000);
@@ -18,11 +26,6 @@ export default function Login() {
   useEffect(() => {
     checkLocalStorage();
   }, []);
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const storeToken = (token) => {
     localStorage.setItem("token", token);
   };
