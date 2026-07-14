@@ -15,9 +15,11 @@ export default function Loader({ children }) {
   }, []);
   if (loading) {
     return (
+      <>
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
           <l-orbit size="50" speed="1.5" color="#ffffff"></l-orbit>
         </div>
+      </>
     );
   }
   return children;
