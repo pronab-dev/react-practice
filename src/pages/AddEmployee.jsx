@@ -73,7 +73,7 @@ export default function AddEmployee() {
   };
   const filteredEmployee =
     searchEmployee.trim() === ""
-      ? employeeList
+      ? [...employeeList]
       : employeeList.filter((employee) => {
           return (
             employee.name

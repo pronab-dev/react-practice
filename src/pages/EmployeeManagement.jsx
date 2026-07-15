@@ -9,6 +9,7 @@ export default function EmployeeManagement() {
   const [loading, setLoading] = useState(false);
   const [employeeId, setEmployeeId] = useState(1);
   const [editingId, setEditingId] = useState(null);
+  const [searchEmployee, setSearchEmployee] = useState(null);
   // Reset the form after submit
   const resetForm = () => {
     setName("");
@@ -75,6 +76,27 @@ export default function EmployeeManagement() {
       });
     }
   };
+
+  //For Search Employee
+  const duplicateEmployeeList =
+    searchEmployee.trim === ""
+      ? employeeList.filter((employee) => {
+          return (
+            employee.name
+              .toLowerCase()
+              .trim()
+              .includes(searchEmployee.toLowerCase().trim()) ||
+            employee.email
+              .toLowerCase()
+              .trim()
+              .includes(searchEmployee.toLowerCase().trim()) ||
+            employee.department
+              .toLowerCase()
+              .trim()
+              .includes(searchEmployee.toLowerCase().trim())
+          );
+        })
+      : [...employeeList];
   return (
     <div className="min-h-screen bg-black p-6">
       <div className="mx-auto max-w-6xl">
@@ -144,7 +166,7 @@ export default function EmployeeManagement() {
                 disabled={loading}
               >
                 {loading
-                  ? "Precessing..."
+                  ? "Processing..."
                   : editingId
                     ? "Update Employee"
                     : "Add Employee"}
@@ -161,7 +183,7 @@ export default function EmployeeManagement() {
             <input
               type="text"
               placeholder="Search employee..."
-              onInput={(e) => searchEmployee(e.target.value)}
+              onChange={(e) => setSearchEmployee(e.target.value)}
               className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200 text-white"
             />
           </div>
@@ -181,8 +203,8 @@ export default function EmployeeManagement() {
             </thead>
 
             <tbody>
-              {employeeList.length > 0 ? (
-                employeeList.map((employee) => {
+              {duplicateEmployeeList.length > 0 ? (
+                duplicateEmployeeList.map((employee) => {
                   return (
                     <tr
                       key={employee.employeeId}
