@@ -4,6 +4,7 @@ import Loader from "../loader/Loader";
 import TestLoader from "../pages/TestLoader";
 import Login from "../pages/Login";
 import AddEmployee from "../pages/AddEmployee";
+import EmployeeManagement from "../pages/EmployeeManagement";
 
 export default function AppRoute() {
   return (
@@ -12,6 +13,7 @@ export default function AppRoute() {
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/add-employee" element={<AddEmployee />} />
+        <Route path="/employee-management" element={<EmployeeManagement />} />
         <Route
           path="/test-loader"
           element={

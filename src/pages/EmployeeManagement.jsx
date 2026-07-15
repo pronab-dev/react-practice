@@ -1,106 +1,94 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiEdit2, FiSearch, FiTrash2 } from "react-icons/fi";
 
-export default function AddEmployee() {
+export default function EmployeeManagement() {
   const [employeeList, setEmployeeList] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
   const [loading, setLoading] = useState(false);
   const [employeeId, setEmployeeId] = useState(1);
-  const [edittingId, setEdittingId] = useState(null);
-  const [searchEmployee, setSearchEmployee] = useState("");
-  const deleteEmployee = (employeeId, name) => {
-    if (confirm(`Are you sure you want to delete ${name}?`)) {
-      setEmployeeList((previousEmployeeList) =>
-        previousEmployeeList.filter((employee) => employee.id != employeeId),
-      );
-    }
-  };
-
-  const getEmployee = (employeeId) => {
-    return employeeList.find((item) => item.id === employeeId);
-  };
-
-  const editEmployee = (employeeId) => {
-    const employee = getEmployee(employeeId);
-    setName(employee.name);
-    setEmail(employee.email);
-    setDepartment(employee.department);
-    setEdittingId(employeeId);
-  };
-  const procesFormSubmit = () => {
-    setLoading(false);
+  const [editingId, setEditingId] = useState(null);
+  // Reset the form after submit
+  const resetForm = () => {
     setName("");
     setEmail("");
     setDepartment("");
+    setLoading(false);
   };
-  const addEmployee = (e) => {
+
+  // Add/Update employee function
+  const addEmployee = async (e) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
-    if (edittingId !== null) {
-      setTimeout(() => {
-        setEmployeeList((previousState) => {
-          return previousState.map((employee) => {
-            if (employee.id === edittingId) {
-              return {
-                id: employee.id,
-                name: name,
-                email: email,
-                department: department,
-              };
-            }
-            return employee;
-          });
+    if (editingId) {
+      setEmployeeList((prev) => {
+        return prev.map((employee) => {
+          if (employee.employeeId === editingId) {
+            return {
+              employeeId: editingId,
+              name: name,
+              email: email,
+              department: department,
+            };
+          }
+          return employee;
         });
-        setEdittingId(null);
-        procesFormSubmit();
-      }, 500);
+      });
+      setEditingId(null);
+      resetForm();
     } else {
       const employeeDetails = {
-        id: employeeId,
+        employeeId: employeeId,
         name: name,
         email: email,
         department: department,
       };
+      // Thinking setTimeout as API call
       setTimeout(() => {
-        setEmployeeList((previousState) => [...previousState, employeeDetails]);
-        setEmployeeId((previousState) => previousState + 1);
-        procesFormSubmit();
-      }, 500);
+        setEmployeeList((prev) => [...prev, employeeDetails]);
+        setEmployeeId((prev) => prev + 1);
+        resetForm();
+      }, 2000);
     }
   };
-  const filteredEmployee =
-    searchEmployee.trim() === ""
-      ? employeeList
-      : employeeList.filter((employee) => {
-          return (
-            employee.name
-              .toLowerCase()
-              .includes(searchEmployee.toLowerCase()) ||
-            employee.email
-              .toLowerCase()
-              .includes(searchEmployee.toLowerCase()) ||
-            employee.department
-              .toLowerCase()
-              .includes(searchEmployee.toLowerCase())
-          );
+
+  //Edit employee function
+  const editEmployee = (employeeId) => {
+    setEditingId(employeeId);
+    const employee = employeeList.find((employee) => {
+      return employee.employeeId === employeeId;
+    });
+    setName(employee.name);
+    setEmail(employee.email);
+    setDepartment(employee.department);
+  };
+
+  //Delete employee function
+  const deleteEmployee = (employeeId, name) => {
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
+      setEmployeeList((prev) => {
+        return prev.filter((employee) => {
+          return employee.employeeId !== employeeId;
         });
+      });
+    }
+  };
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="mx-auto max-w-6xl">
-        <h1 className="mb-6 text-3xl font-bold text-gray-800">
+        <h1 className="mb-6 text-3xl font-bold text-white">
           Employee Management
         </h1>
 
         {/* Form Card */}
-        <form onSubmit={addEmployee}>
-          <div className="mb-8 rounded-xl bg-white p-6 shadow-lg">
-            <h2 className="mb-5 text-xl font-semibold text-gray-700">
-              {edittingId === null ? "Add Employee" : "Edit Employee"}
-            </h2>
+        <div className="mb-8 rounded-xl bg-gray-100 p-6 shadow-lg">
+          <h2 className="mb-5 text-xl font-semibold text-gray-700">
+            {editingId ? "Edit Employee" : "Add Employee"}
+          </h2>
 
+          <form onSubmit={addEmployee}>
             <div className="grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -108,10 +96,10 @@ export default function AddEmployee() {
                 </label>
                 <input
                   type="text"
-                  onInput={(e) => setName(e.target.value)}
-                  value={name}
-                  required
                   placeholder="Enter employee name"
+                  value={name}
+                  onInput={(e) => setName(e.target.value)}
+                  required
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                 />
               </div>
@@ -122,10 +110,10 @@ export default function AddEmployee() {
                 </label>
                 <input
                   type="email"
-                  onInput={(e) => setEmail(e.target.value)}
-                  value={email}
-                  required
                   placeholder="Enter email"
+                  value={email}
+                  onInput={(e) => setEmail(e.target.value)}
+                  required
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                 />
               </div>
@@ -134,11 +122,12 @@ export default function AddEmployee() {
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Department
                 </label>
+
                 <select
-                  onChange={(e) => setDepartment(e.target.value)}
-                  value={department}
-                  required
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  required
                 >
                   <option value="">Select Department</option>
                   <option value="HR">HR</option>
@@ -151,36 +140,35 @@ export default function AddEmployee() {
 
             <div className="mt-6">
               <button
-                disabled={loading}
                 className="rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white transition hover:bg-violet-700"
+                disabled={loading}
               >
                 {loading
-                  ? "Processing..."
-                  : edittingId === null
-                    ? "Add Employee"
-                    : "Update Employee"}
+                  ? "Precessing..."
+                  : editingId
+                    ? "Update Employee"
+                    : "Add Employee"}
               </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
 
         {/* Search */}
         <div className="mb-5">
           <div className="relative max-w-sm">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
 
             <input
               type="text"
               placeholder="Search employee..."
-              onChange={(e) => setSearchEmployee(e.target.value)}
-              value={searchEmployee}
-              className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
+              onInput={(e) => searchEmployee(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-200 text-white"
             />
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-xl bg-white shadow-lg">
+        <div className="overflow-x-auto rounded-xl bg-gray-100 shadow-lg">
           <table className="min-w-full">
             <thead className="bg-violet-600 text-white">
               <tr>
@@ -193,29 +181,33 @@ export default function AddEmployee() {
             </thead>
 
             <tbody>
-              {filteredEmployee.length > 0 ? (
-                filteredEmployee.map((item) => {
+              {employeeList.length > 0 ? (
+                employeeList.map((employee) => {
                   return (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="px-6 py-4">{item.id}</td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.email}</td>
-                      <td className="px-6 py-4">{item.department}</td>
-
+                    <tr
+                      key={employee.employeeId}
+                      className="border-b hover:bg-gray-50"
+                    >
+                      <td className="px-6 py-4">{employee.employeeId}</td>
+                      <td className="px-6 py-4">{employee.name}</td>
+                      <td className="px-6 py-4">{employee.email}</td>
+                      <td className="px-6 py-4">{employee.department}</td>
                       <td className="px-6 py-4">
                         <div className="flex justify-center gap-3">
                           <button
                             type="button"
+                            onClick={() => editEmployee(employee.employeeId)}
                             className="rounded-lg bg-amber-500 p-2 text-white hover:bg-amber-600"
-                            onClick={() => editEmployee(item.id)}
                           >
                             <FiEdit2 size={18} />
                           </button>
 
                           <button
                             type="button"
+                            onClick={() =>
+                              deleteEmployee(employee.employeeId, employee.name)
+                            }
                             className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
-                            onClick={() => deleteEmployee(item.id, item.name)}
                           >
                             <FiTrash2 size={18} />
                           </button>
