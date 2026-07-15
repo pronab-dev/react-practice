@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FiEdit2, FiSearch, FiTrash2 } from "react-icons/fi";
+import Modal from "../component/Modal";
 
 export default function EmployeeManagement() {
   const [employeeList, setEmployeeList] = useState([]);
@@ -9,7 +10,9 @@ export default function EmployeeManagement() {
   const [loading, setLoading] = useState(false);
   const [employeeId, setEmployeeId] = useState(1);
   const [editingId, setEditingId] = useState(null);
-  const [searchEmployee, setSearchEmployee] = useState(null);
+  const [searchEmployee, setSearchEmployee] = useState("");
+  const [deleteEmployeeDetails, setDeleteEmployeeDetails] = useState({});
+
   // Reset the form after submit
   const resetForm = () => {
     setName("");
@@ -18,12 +21,16 @@ export default function EmployeeManagement() {
     setLoading(false);
   };
 
+  const setDeleteFalse = () => {
+    setDeleteEmployeeDetails({});
+  };
+
   // Add/Update employee function
   const addEmployee = async (e) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
-    if (editingId) {
+    if (editingId !== null) {
       setEmployeeList((prev) => {
         return prev.map((employee) => {
           if (employee.employeeId === editingId) {
@@ -67,19 +74,18 @@ export default function EmployeeManagement() {
   };
 
   //Delete employee function
-  const deleteEmployee = (employeeId, name) => {
-    if (confirm(`Are you sure you want to delete ${name}?`)) {
-      setEmployeeList((prev) => {
-        return prev.filter((employee) => {
-          return employee.employeeId !== employeeId;
-        });
+  const deleteEmployee = () => {
+    setEmployeeList((prev) => {
+      return prev.filter((employee) => {
+        return employee.employeeId !== deleteEmployeeDetails.employeeId;
       });
-    }
+    });
+    setDeleteFalse();
   };
 
   //For Search Employee
   const duplicateEmployeeList =
-    searchEmployee.trim === ""
+    searchEmployee.trim() !== ""
       ? employeeList.filter((employee) => {
           return (
             employee.name
@@ -98,12 +104,19 @@ export default function EmployeeManagement() {
         })
       : [...employeeList];
   return (
-    <div className="min-h-screen bg-black p-6">
+    <div className="min-h-screen bg-gray-600 p-6">
       <div className="mx-auto max-w-6xl">
         <h1 className="mb-6 text-3xl font-bold text-white">
           Employee Management
         </h1>
-
+        {Object.keys(deleteEmployeeDetails).length !== 0 && (
+          <Modal
+            name={deleteEmployeeDetails.name}
+            id={deleteEmployeeDetails.employeeId}
+            onConfirm={deleteEmployee}
+            onCancel={setDeleteFalse}
+          />
+        )}
         {/* Form Card */}
         <div className="mb-8 rounded-xl bg-gray-100 p-6 shadow-lg">
           <h2 className="mb-5 text-xl font-semibold text-gray-700">
@@ -227,7 +240,10 @@ export default function EmployeeManagement() {
                           <button
                             type="button"
                             onClick={() =>
-                              deleteEmployee(employee.employeeId, employee.name)
+                              setDeleteEmployeeDetails({
+                                employeeId: employee.employeeId,
+                                name: employee.name,
+                              })
                             }
                             className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
                           >
