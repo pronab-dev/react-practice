@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiEdit2, FiSearch, FiTrash2 } from "react-icons/fi";
 import ModalPractice from "../component/ModalPractice";
+import TableComponent from "../component/TableComponent";
 
 export default function AddEmployee() {
   const [employeeList, setEmployeeList] = useState([]);
@@ -95,6 +96,29 @@ export default function AddEmployee() {
               .includes(searchEmployee.toLowerCase())
           );
         });
+
+  const columns = [
+    {
+      header: "ID",
+      key: "id",
+    },
+    {
+      header: "Name",
+      key: "name",
+    },
+    {
+      header: "Email",
+      key: "email",
+    },
+    {
+      header: "Department",
+      key: "department",
+    },
+    {
+      header: "Action",
+      key: "action",
+    },
+  ];
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="mx-auto max-w-6xl">
@@ -194,65 +218,36 @@ export default function AddEmployee() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-xl bg-white shadow-lg">
-          <table className="min-w-full">
-            <thead className="bg-violet-600 text-white">
-              <tr>
-                <th className="px-6 py-4 text-left">ID</th>
-                <th className="px-6 py-4 text-left">Name</th>
-                <th className="px-6 py-4 text-left">Email</th>
-                <th className="px-6 py-4 text-left">Department</th>
-                <th className="px-6 py-4 text-center">Action</th>
-              </tr>
-            </thead>
+        <TableComponent
+          columns={columns}
+          data={filteredEmployee}
+          actionButtons={
+            <>
+              <div className="flex justify-center gap-3">
+                <button
+                  type="button"
+                  className="rounded-lg bg-amber-500 p-2 text-white hover:bg-amber-600"
+                  onClick={() => editEmployee(item.id)}
+                >
+                  <FiEdit2 size={18} />
+                </button>
 
-            <tbody>
-              {filteredEmployee.length > 0 ? (
-                filteredEmployee.map((item) => {
-                  return (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="px-6 py-4">{item.id}</td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.email}</td>
-                      <td className="px-6 py-4">{item.department}</td>
-
-                      <td className="px-6 py-4">
-                        <div className="flex justify-center gap-3">
-                          <button
-                            type="button"
-                            className="rounded-lg bg-amber-500 p-2 text-white hover:bg-amber-600"
-                            onClick={() => editEmployee(item.id)}
-                          >
-                            <FiEdit2 size={18} />
-                          </button>
-
-                          <button
-                            type="button"
-                            className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
-                            onClick={() =>
-                              setdDeleteEmployeeDetails({
-                                id: item.id,
-                                name: item.name,
-                              })
-                            }
-                          >
-                            <FiTrash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan="5" className="py-8 text-center text-gray-500">
-                    No employees found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                <button
+                  type="button"
+                  className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
+                  onClick={() =>
+                    setdDeleteEmployeeDetails({
+                      id: item.id,
+                      name: item.name,
+                    })
+                  }
+                >
+                  <FiTrash2 size={18} />
+                </button>
+              </div>
+            </>
+          }
+        />
       </div>
     </div>
   );
