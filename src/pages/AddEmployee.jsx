@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiEdit2, FiSearch, FiTrash2 } from "react-icons/fi";
+import ModalPractice from "../component/ModalPractice";
 
 export default function AddEmployee() {
   const [employeeList, setEmployeeList] = useState([]);
@@ -10,12 +11,19 @@ export default function AddEmployee() {
   const [employeeId, setEmployeeId] = useState(1);
   const [edittingId, setEdittingId] = useState(null);
   const [searchEmployee, setSearchEmployee] = useState("");
-  const deleteEmployee = (employeeId, name) => {
-    if (confirm(`Are you sure you want to delete ${name}?`)) {
-      setEmployeeList((previousEmployeeList) =>
-        previousEmployeeList.filter((employee) => employee.id != employeeId),
-      );
-    }
+  const [deleteEmployeeDetails, setdDeleteEmployeeDetails] = useState({});
+
+  const deleteEmployee = () => {
+    setEmployeeList((previousEmployeeList) =>
+      previousEmployeeList.filter(
+        (employee) => employee.id != deleteEmployeeDetails.id,
+      ),
+    );
+    cancelDelete();
+  };
+
+  const cancelDelete = () => {
+    setdDeleteEmployeeDetails({});
   };
 
   const getEmployee = (employeeId) => {
@@ -93,7 +101,13 @@ export default function AddEmployee() {
         <h1 className="mb-6 text-3xl font-bold text-gray-800">
           Employee Management
         </h1>
-
+        {Object.keys(deleteEmployeeDetails).length > 0 && (
+          <ModalPractice
+            employeeDetail={deleteEmployeeDetails}
+            deleteEmployee={deleteEmployee}
+            cancelDelete={cancelDelete}
+          />
+        )}
         {/* Form Card */}
         <form onSubmit={addEmployee}>
           <div className="mb-8 rounded-xl bg-white p-6 shadow-lg">
@@ -215,7 +229,12 @@ export default function AddEmployee() {
                           <button
                             type="button"
                             className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
-                            onClick={() => deleteEmployee(item.id, item.name)}
+                            onClick={() =>
+                              setdDeleteEmployeeDetails({
+                                id: item.id,
+                                name: item.name,
+                              })
+                            }
                           >
                             <FiTrash2 size={18} />
                           </button>
