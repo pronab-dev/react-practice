@@ -101,6 +101,7 @@ export default function AddEmployee() {
     {
       header: "ID",
       key: "id",
+      sortable: true,
     },
     {
       header: "Name",
