@@ -117,6 +117,30 @@ export default function AddEmployee() {
     {
       header: "Action",
       key: "action",
+      render: (item) => (
+        <div className="flex justify-center gap-3">
+          <button
+            type="button"
+            className="rounded-lg bg-amber-500 p-2 text-white hover:bg-amber-600"
+            onClick={() => editEmployee(item.id)}
+          >
+            <FiEdit2 size={18} />
+          </button>
+
+          <button
+            type="button"
+            className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
+            onClick={() =>
+              setdDeleteEmployeeDetails({
+                id: item.id,
+                name: item.name,
+              })
+            }
+          >
+            <FiTrash2 size={18} />
+          </button>
+        </div>
+      ),
     },
   ];
   return (
@@ -218,36 +242,7 @@ export default function AddEmployee() {
         </div>
 
         {/* Table */}
-        <TableComponent
-          columns={columns}
-          data={filteredEmployee}
-          actionButtons={
-            <>
-              <div className="flex justify-center gap-3">
-                <button
-                  type="button"
-                  className="rounded-lg bg-amber-500 p-2 text-white hover:bg-amber-600"
-                  onClick={() => editEmployee(item.id)}
-                >
-                  <FiEdit2 size={18} />
-                </button>
-
-                <button
-                  type="button"
-                  className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
-                  onClick={() =>
-                    setdDeleteEmployeeDetails({
-                      id: item.id,
-                      name: item.name,
-                    })
-                  }
-                >
-                  <FiTrash2 size={18} />
-                </button>
-              </div>
-            </>
-          }
-        />
+        <TableComponent columns={columns} data={filteredEmployee} />
       </div>
     </div>
   );

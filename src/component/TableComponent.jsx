@@ -1,4 +1,4 @@
-export default function TableComponent({ columns, data, actionButtons }) {
+export default function TableComponent({ columns, data }) {
   return (
     <div className="overflow-x-auto rounded-xl bg-white shadow-lg">
       <table className="min-w-full">
@@ -23,9 +23,7 @@ export default function TableComponent({ columns, data, actionButtons }) {
                   {columns.map((row) => {
                     return (
                       <td key={row.key} className="px-6 py-4">
-                        {item[row.key] !== undefined
-                          ? item[row.key]
-                          : actionButtons}
+                        {row.render ? row.render(item) : item[row.key]}
                       </td>
                     );
                   })}
